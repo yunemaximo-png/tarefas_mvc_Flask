@@ -58,7 +58,7 @@ class Database:
             if self.cursor.description:
                 return self.cursor.fetchall()
 
-            self.cursor.commit()
+            self.connection.commit()
             return self.cursor.rowcount
 
         except Error as e:

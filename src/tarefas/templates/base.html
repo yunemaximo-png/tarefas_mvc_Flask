@@ -3,89 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titulo }}</title>
+    <title>{{ titulo_da_pagina }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Digite a tarefa e a data de conclusão (opcional):</h1>
-    <input type="text" id="tituloTarefa">
-    <input type="date" id="dataConclusao">
-    <button type="button" onclick="adicionarTarefa()">Adicionar</button>
-    <output id="listaTarefas">Nenhuma tarefa cadastrada</output>
+    <h1>Taria</h1>
 
-    <script>
-        // Aplicações MVC (Modelagem-Visualização-Controle)
+    <form method="POST">
+        <input type="text" id="tituloTarefa" name="tituloTarefa">
+        <input type="date" id="dataConclusao" name="dataConclusao">
+        <button type="submit">Adicionar</button>
+    </form>
 
+    <ul id="listaTarefas">
+        {% for tarefa in tarefas_da_pagina %}
+            <li>
+                {% if tarefa_em_edicao and tarefa_em_edicao.id_tarefa == tarefa.id_tarefa %}
+                    <form method="POST" action="{{ url_for('atualizar', id=tarefa.id_tarefa) }}" style="display: inline;">
+                        <input 
+                            type="text" 
+                            name="tituloTarefa" 
+                            value="{{ tarefa.titulo_tarefa }}" 
+                            required
+                        >
+                        <input 
+                            type="date" 
+                            name="dataConclusao" 
+                            value="{{ tarefa.data_conclusao if tarefa.data_conclusao else '' }}"
+                        >
+                        <button type="submit">Salvar</button>
+                        <a href="{{ url_for('home') }}">Cancelar</a>
+                    </form>
+                {% else %}
+                    {{ tarefa.titulo_tarefa }} - {{ tarefa.data_conclusao }}
+                    <a href="{{ url_for('atualizar', id=tarefa.id_tarefa) }}">Editar</a>
+                    <a href="{{ url_for('apagar_id_especifico', id=tarefa.id_tarefa) }}">Apagar</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 
-        // Seção de Modelagem
-        let tarefas;
-        const tarefasSalvas = JSON.parse(localStorage.getItem('tarefas'));
-
-        if (Array.isArray(tarefasSalvas)) {
-            tarefas = tarefasSalvas;
-        } else {
-            tarefas = [];
-        }
-
-        function salvarTarefas() {
-            localStorage.setItem('tarefas', JSON.stringify(tarefas));
-        }
-
-        // Seção de Visualização 
-        function renderizarTarefas() {
-            const listaTarefas = document.getElementById('listaTarefas');
-            listaTarefas.innerHTML = "";
-            
-            tarefas.forEach(function (tarefa) {
-                const divTarefa = document.createElement('div');
-                divTarefa.innerHTML = tarefa.tituloTarefa + ' - ' + tarefa.dataConclusao;
-
-                const botaoApagar = document.createElement('button');
-                botaoApagar.innerHTML = "❌Apagar";
-                botaoApagar.onclick = apagarTarefa;
-                botaoApagar.id = tarefa.idTarefa;
-
-                divTarefa.appendChild(botaoApagar);
-                listaTarefas.appendChild(divTarefa);
-            });
-        }
-
-    //Seção de Controle
-    function adicionarTarefa() {
-        const tituloTarefa = document.getElementById('tituloTarefa').value;
-        const dataConclusao = document.getElementById('dataConclusao').value;
-
-        tarefas.push(
-            {
-                tituloTarefa: tituloTarefa,
-                dataConclusao: dataConclusao,
-                idTarefa: Date.now()
-            }
-        );
-
-        salvarTarefas();
-        renderizarTarefas();  
-
-    }
-
-        function apagarTarefa(evento) {
-            const botaoClicado = evento.target;
-            const idTarefa = botaoClicado.id;
-            tarefas = tarefas.filter(function (tarefa) {
-                if (tarefa.idTarefa == idTarefa) {
-                    return false;
-                } else {
-                    return true;
-                }
-        });
-        
-        salvarTarefas();
-        renderizarTarefas();  
-
-    }   
-
-    renderizarTarefas()
-        
-    </script>
 </body>
 </html>

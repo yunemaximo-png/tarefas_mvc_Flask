@@ -114,7 +114,3 @@ def init_db(sql_filepath=SQL_PATH):
 Tudo o que for escrito dessa área
 será lido e executado como string.
 """
-# db = Database()
-# db.conectar()
-# print(db.executar('show tables;'))
-# db.desconectar()
